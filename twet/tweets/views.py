@@ -28,22 +28,6 @@ class QuestionDetailView(generics.RetrieveUpdateDestroyAPIView):
     lookup_url_kwarg = 'pk'
     permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
     queryset = Tweet.objects.all()
-    def post(self, request, *args, **kwargs):
-        tweet = self.get_object()
-        serializer = TweetActionSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            action = serializer.validated_data.get('action')
-            user = self.request.user
-            if action == 'like':
-                tweet.likes.add(user)
-                return Response({'message': 'Tweet liked'}, status=status.HTTP_201_CREATED)
-            elif action == 'unlike':
-                tweet.likes.remove(user)
-                return Response({'message': 'Tweet unliked'}, status=status.HTTP_204_NO_CONTENT)
-            elif action == 'retweet':
-                pass 
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def perform_update(self, serializer):
         serializer.save()
 
