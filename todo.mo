@@ -2,7 +2,9 @@ Tweets :
     createing : 
         imge
         text
-    delete
+    deletig
+    retweeting 
+    liking 
 
 Users :
     Register 
