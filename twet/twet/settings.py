@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-29x#rdzeybj2c^a3ubw^)fq$25%9vq1ezut%xqh-^f=$zkkz$g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost','127.0.0.1']
 
 
 # Application definition
@@ -38,12 +38,15 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "corsheaders",
     'rest_framework',
+    'rest_framework.authtoken',
     'tweets',
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -119,21 +122,26 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
-
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',  # Add this line
+    ],
+}
 
-# REST_FRAMEWORK = {
-    
-#    'DEFAULT_AUTHENTICATION_CLASSES':[
-#         'rest_framework.authentication.SessionAuthentication',
-#     ],
-#     'DEFAULT_RENDERER_CLASSES': [
-#         'rest_framework.renderers.JSONRenderer',
-#     ],
- 
-# }
+
+CORS_ALLOW_ALL_ORIGINS=True
+CORS_URLS_REGEX = r"^/api/.*$"
+
+DEFAULT_RENDERER_CLASSES=[
+    'rest_framework.renderers.JSONRenderer',
+]

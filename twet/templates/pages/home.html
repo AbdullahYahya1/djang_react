@@ -25,19 +25,63 @@ home
 
 <script>
 
+    // Function to retrieve the CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 
-
-
-
-
-
+    // Retrieve the CSRF token
+    const csrftoken = getCookie('csrftoken');
 
     const container = document.getElementById('tweets-container');
+    
+  
+
+    function handleTweetAction(tweet_id ,action='like') {
+        const url = `http://127.0.0.1:8000/tweets/like/${tweet_id}`
+        const data = {
+        "action": action,
+        }
+        fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken 
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Success:', data);
+            render(container);
+
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
     
     
     async function fetchTweets() {
         try {
-            const response = await fetch('http://127.0.0.1:8000/tweets/create');
+            const response = await fetch('http://127.0.0.1:8000/tweets');
             if (!response.ok) {
                 throw new Error('Network response was not ok ' + response.statusText);
             }
@@ -59,6 +103,13 @@ home
                         ${tweet.image ? `<img src="${tweet.image}" class="card-img-top mb-2" alt="Tweet Image" style="max-width: 100%; height: auto;">` : ''}
                         <p class="card-text">${tweet.content}</p>
                         <span class="text-muted">${tweet.date}</span>
+                        <br/>
+                        <span class="text-muted">likes : ${tweet.likes_count}</span>
+                        <br/>
+                        <button onclick="handleTweetAction(${tweet.id})">like</button>
+                        <button onclick="handleTweetAction(${tweet.id} ,action='unlike')">unlike</button>
+                        <button onclick="handleTweetAction(${tweet.id} ,action='retweet')">retweet</button>
+                        
                     </div>
                 </div>
             `;

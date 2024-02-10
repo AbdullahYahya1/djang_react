@@ -10,8 +10,13 @@ class Tweet(models.Model):
     user = models.ForeignKey(User , on_delete=models.CASCADE)
     content = models.CharField(max_length=255 ,  blank=True , null=True)
     imge = models.FileField( upload_to='images/' , blank=True , null=True)
-    likes = models.ManyToManyField(User ,related_name='likes', null=True , blank=True , through=TweetLike)
+    likes = models.ManyToManyField(User ,related_name='likes',  blank=True , through=TweetLike)
     date = models.DateField(auto_now_add=True)
+    parent = models.ForeignKey('self' , null=True , blank=True , on_delete=models.SET_NULL)   
+    
+    @property
+    def is_retweet(self):
+        return True if self.parent != None else False
     class Meta:
         ordering =[ '-id']
     

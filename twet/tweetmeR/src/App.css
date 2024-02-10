@@ -1,0 +1,11 @@
+.layout{
+  background-color: rgb(137, 137, 137);
+  width: 450px;
+  padding: 20px;
+  margin-bottom: 5px;
+  margin-inline:auto ;
+}
+.retweetTweet{
+  background-color: rgb(57, 57, 57);
+  color: white;
+}
