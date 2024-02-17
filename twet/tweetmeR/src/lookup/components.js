@@ -1,7 +1,14 @@
-export async function fetchTweets(url = "http://localhost:8000/api/tweets/") {
+export async function fetchTweets(url = "http://localhost:8000/api/tweets/" , id=null) { 
+  if (id){
+    url =url + id +'/'
+  }
   try {
     const response = await fetch(url, {
       method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': 'Token 38d8b5e2993f43b88b3b7d35c17a3423512d5ae0',
+      },
     });
 
     if (!response.ok) {
