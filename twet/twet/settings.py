@@ -146,3 +146,8 @@ CORS_URLS_REGEX = r"^/api/.*$"
 DEFAULT_RENDERER_CLASSES=[
     'rest_framework.renderers.JSONRenderer',
 ]
+
+from datetime import timedelta
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=.5),
+}

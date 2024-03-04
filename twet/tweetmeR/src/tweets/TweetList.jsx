@@ -2,9 +2,12 @@ import React, { useState, useEffect } from "react";
 import { fetchTweets } from "../lookup/components";
 import Tweet from "./Tweet";
 import TweetForm from "./TweetForm";
+import { useNavigate } from "react-router-dom";
 function TweetList(props) {
   const [tweets, setTweets] = useState([]);
   const [nextTweetslink, setNextTweetsLink] = useState("");
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -14,6 +17,9 @@ function TweetList(props) {
           setNextTweetsLink(data.next);
         }
       } catch (error) {
+        if (error.message == 'TokenExpired'){
+          navigate('/login');
+        }
         console.error("Error fetching tweets:", error);
       }
     };
@@ -21,7 +27,7 @@ function TweetList(props) {
   }, []);
   const fetchData2 = async () => {
     try {
-      if (nextTweetslink) {
+      if (nextTweetslink){
         const data = await fetchTweets(nextTweetslink);
         setTweets((prevTweets) => [...prevTweets, ...data.results]);
         if (data.next) {
@@ -31,16 +37,16 @@ function TweetList(props) {
         }
       }
     } catch (error) {
+      if (error.message == 'TokenExpired'){
+        navigate('/login');
+      }
       console.error("Error fetching tweets:", error);
-    }
+  }
   };
 
   useEffect(() => {
     function handleScroll() {
-      if (
-        window.innerHeight + document.documentElement.scrollTop ===
-        document.documentElement.offsetHeight
-      ) {
+      if (window.innerHeight + document.documentElement.scrollTop>=document.documentElement.offsetHeight) {
         fetchData2();
       }
     }

@@ -1,76 +1,85 @@
-export async function fetchTweets(url = "http://localhost:8000/api/tweets/" , id=null) { 
-  if (id){
-    url =url + id +'/'
+// apiFunctions.js
+const getAuthToken = () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  return user ? `Bearer ${user.access}` : ''; // Use the `access` token for Authorization
+};
+export async function fetchTweets(url = "http://localhost:8000/api/tweets/", id = null) {
+  if (id) {
+    url += `${id}/`;
   }
   try {
     const response = await fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        'Authorization': 'Token 38d8b5e2993f43b88b3b7d35c17a3423512d5ae0',
+        'Authorization': getAuthToken(), // Use Bearer token from local storage
       },
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('TokenExpired');
+      }
       const errorData = await response.json();
-      throw new Error(
-        `Failed to fetch tweets: ${response.status} ${response.statusText} - ${errorData.message}`
-      );
+      throw new Error(`Failed to fetch tweets: ${response.status} ${response.statusText} - ${errorData.message}`);
     }
 
-    const data = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
-    console.error("Error on  fetching tweet:", error.response.data);
-    throw error; // Re-throw the error for proper error propagation
-  }
-}
-
-export async function PostTweet(data = {}, url = "http://127.0.0.1:8000/api/tweets/create/", method = "POST") {
-  try {
-    const response = await fetch(url, {
-      method: method,
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': 'Token 38d8b5e2993f43b88b3b7d35c17a3423512d5ae0',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Failed to post tweet: ${response.status} ${response.statusText} - ${errorData.detail}`);
-    }
-    return response.json();
-  } catch (error) {
-    console.error("Error on posting tweet:", error.response.data);
+    console.error("Error fetching tweet:", error);
     throw error;
   }
 }
 
-export async function buttonsApiActions(action, id = 63, url = "http://127.0.0.1:8000/api/tweets/action/", method = "PUT") {
+export async function PostTweet(data = {}, url = "http://localhost:8000/api/tweets/create/") {
   try {
-    const requestData = {"action": action };
-    url += `${id}/`;
     const response = await fetch(url, {
-      method: method,
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
-        'Authorization': 'Token 38d8b5e2993f43b88b3b7d35c17a3423512d5ae0',
+        'Authorization': getAuthToken(),
       },
-      body: JSON.stringify(requestData), // Send requestData instead of data
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('TokenExpired');
+      }
+      const errorData = await response.json();
+      throw new Error(`Failed to post tweet: ${response.status} ${response.statusText} - ${errorData.detail}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error posting tweet:", error);
+    throw error;
+  }
+}
+
+export async function buttonsApiActions(action, id = 63, url = "http://localhost:8000/api/tweets/action/") {
+  try {
+    const requestData = { "action": action };
+    url += `${id}/`;
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': getAuthToken(),
+      },
+      body: JSON.stringify(requestData),
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('TokenExpired');
+      }
       // Handling non-JSON error responses
       const errorText = await response.text();
-      throw new Error(`Failed action to tweet: ${response.status} ${response.statusText} - ${errorText}`);
+      throw new Error(`Failed action on tweet: ${response.status} ${response.statusText} - ${errorText}`);
     }
 
-    // Read the response and return the expected data
-    const responseData = await response.json();
-    return { status: response.status, data: responseData }; // Return the response status and data
+    return { status: response.status, data: await response.json() };
   } catch (error) {
-    console.error("Error on action tweet:", error.response.data);
+    console.error("Error on action tweet:", error);
     throw error;
   }
 }

@@ -167,11 +167,9 @@ class UserLoginView(ObtainAuthToken):
 
 
 
-
-
-from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from .serializers import UserRegistrationSerializer
 
 class UserRegistrationAPIView(APIView):
@@ -179,6 +177,12 @@ class UserRegistrationAPIView(APIView):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            # Optionally generate JWT token here
             return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
+        errors = serializer.errors
+        custom_errors = {}
+        if 'username' in errors:
+            custom_errors['username'] = "Please ensure the username is valid. It should only contain letters, numbers, and @/./+/-/_ characters."
+        if custom_errors:
+            return Response(custom_errors, status=status.HTTP_400_BAD_REQUEST)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
