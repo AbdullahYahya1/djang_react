@@ -3,63 +3,62 @@ import { fetchTweets } from "../lookup/components";
 import Tweet from "./Tweet";
 import TweetForm from "./TweetForm";
 import { useNavigate } from "react-router-dom";
+
 function TweetList(props) {
   const [tweets, setTweets] = useState([]);
-  const [nextTweetslink, setNextTweetsLink] = useState("");
+  const [nextTweetsLink, setNextTweetsLink] = useState("");
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
+    async function initialFetch() {
       try {
         const data = await fetchTweets();
         setTweets(data.results);
-        if (data.next) {
-          setNextTweetsLink(data.next);
-        }
+        setNextTweetsLink(data.next || "");
+        setHasMore(data.next != null);
       } catch (error) {
-        if (error.message == 'TokenExpired'){
+        if (error.message === 'TokenExpired') {
           navigate('/login');
         }
         console.error("Error fetching tweets:", error);
       }
-    };
-    fetchData();
-  }, []);
-  const fetchData2 = async () => {
+    }
+    initialFetch();
+  }, [navigate]);
+
+  async function fetchMoreTweets() {
+    if (!nextTweetsLink || isLoading) return;
+    setIsLoading(true);
     try {
-      if (nextTweetslink){
-        const data = await fetchTweets(nextTweetslink);
-        setTweets((prevTweets) => [...prevTweets, ...data.results]);
-        if (data.next) {
-          setNextTweetsLink(data.next);
-        } else {
-          setNextTweetsLink(""); // Reset nextTweetslink if no more tweets are available
-        }
-      }
+      const data = await fetchTweets(nextTweetsLink);
+      setTweets((prevTweets) => [...prevTweets, ...data.results]);
+      setNextTweetsLink(data.next || "");
+      setHasMore(data.next != null);
     } catch (error) {
-      if (error.message == 'TokenExpired'){
+      if (error.message === 'TokenExpired') {
         navigate('/login');
       }
-      console.error("Error fetching tweets:", error);
+      console.error("Error fetching more tweets:", error);
+    } finally {
+      setIsLoading(false);
+    }
   }
-  };
 
   useEffect(() => {
     function handleScroll() {
-      if (window.innerHeight + document.documentElement.scrollTop>=document.documentElement.offsetHeight) {
-        fetchData2();
+      if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 100 && hasMore && !isLoading) {
+        fetchMoreTweets();
       }
     }
     window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [nextTweetslink]); // Include nextTweetslink as a dependency
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [nextTweetsLink, isLoading, hasMore]);
 
-  const addTweet = (newTweet) => {
+  function addTweet(newTweet) {
     setTweets([newTweet, ...tweets]);
-  };
-
+  }
 
   return (
     <div>
@@ -71,11 +70,13 @@ function TweetList(props) {
             addTweet={addTweet}
             setTweets={setTweets}
             tweets={tweets}
-            key={index}
+            key={tweet.id || index} // Assuming each tweet has a unique 'id'
             cname="layout"
           />
         ))}
       </ul>
+      {isLoading && <p>Loading more tweets...</p>}
+      {!hasMore && <p>You have reached the end of the list.</p>}
     </div>
   );
 }

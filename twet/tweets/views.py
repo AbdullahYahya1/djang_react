@@ -103,7 +103,7 @@ class actionTweetView(generics.UpdateAPIView):
         elif action == 'retweet':
             content = serializer.validated_data.get('content')
             new_tweet = Tweet.objects.create(user=user, parent=instance, content=content)
-            tweet_serializer = Tweetserializer(new_tweet)  
+            tweet_serializer = Tweetserializer(new_tweet, context={'request': request})  
             return Response({'message': 'Tweet has been retweeted', 'tweet': tweet_serializer.data}, status=status.HTTP_201_CREATED)
         return Response({'message': 'Invalid action'}, status=status.HTTP_400_BAD_REQUEST)
   
@@ -122,21 +122,6 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from .serializers import UserSerializer
-
-class UserCreateView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [permissions.AllowAny]
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            if user:
-                token = Token.objects.create(user=user)
-                return Response({'token': token.key})
-        return Response(serializer.errors, status=400)
- 
- 
 
 from rest_framework import status
 from rest_framework.authtoken.models import Token

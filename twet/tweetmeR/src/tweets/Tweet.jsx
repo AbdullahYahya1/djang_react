@@ -8,6 +8,7 @@ function Tweet(props) {
       const response = await buttonsApiActions(action, tweet_id);
       if (response.status === 201 || response.status === 200) {
         if(action ==='retweet'){
+            
             addTweet(response.data.tweet)
             return 
         }

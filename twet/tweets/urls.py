@@ -7,6 +7,5 @@ urlpatterns = [
     path('', tweetList.as_view()),
     path('create/', tweetCreateView.as_view() , name='create'),
     path('action/<int:pk>/', actionTweetView.as_view() , name='like'),
-    path('myauth', UserCreateView.as_view() , name='auth'),
     path('login',UserLoginView.as_view(), name='login')
 ]
