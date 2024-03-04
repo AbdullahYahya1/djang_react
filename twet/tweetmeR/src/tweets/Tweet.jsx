@@ -3,9 +3,7 @@ import Button from "./Button";
 import { buttonsApiActions } from "../lookup/components";
 function Tweet(props) {
   const { tweet, addTweet, setTweets, tweets, cname } = props;
-
   const handleTweetAction = async (event, tweet_id, action) => {
-    console.log('hi')
     try {
       const response = await buttonsApiActions(action, tweet_id);
       if (response.status === 201 || response.status === 200) {
@@ -15,17 +13,17 @@ function Tweet(props) {
         }
         const updatedTweets = tweets.map((tweet) => {
           if (tweet.id === tweet_id) {
-            if (action === "like" && !tweet.liked) {
+            if (action === "like" && !tweet.like_status) {
               return {
                 ...tweet,
                 likes_count: tweet.likes_count + 1,
-                liked: true,
+                like_status: true,
               };
-            } else if (action === "unlike" && tweet.liked) {
+            } else if (action === "unlike" && tweet.like_status) {
               return {
                 ...tweet,
                 likes_count: tweet.likes_count - 1,
-                liked: false,
+                like_status: false,
               };
             }
           }
@@ -40,7 +38,6 @@ function Tweet(props) {
       console.error("Error occurred while updating tweet: ", error);
     }
   };
-
   return (
     <div className={cname}>
       <br />

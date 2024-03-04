@@ -103,7 +103,7 @@ class actionTweetView(generics.UpdateAPIView):
         elif action == 'retweet':
             content = serializer.validated_data.get('content')
             new_tweet = Tweet.objects.create(user=user, parent=instance, content=content)
-            tweet_serializer = Tweetserializer(new_tweet)  # Use appropriate serializer
+            tweet_serializer = Tweetserializer(new_tweet)  
             return Response({'message': 'Tweet has been retweeted', 'tweet': tweet_serializer.data}, status=status.HTTP_201_CREATED)
         return Response({'message': 'Invalid action'}, status=status.HTTP_400_BAD_REQUEST)
   
