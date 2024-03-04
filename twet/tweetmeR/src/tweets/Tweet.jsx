@@ -8,7 +8,7 @@ function Tweet(props) {
       const response = await buttonsApiActions(action, tweet_id);
       if (response.status === 201 || response.status === 200) {
         if(action ==='retweet'){
-            
+
             addTweet(response.data.tweet)
             return 
         }
@@ -56,19 +56,23 @@ function Tweet(props) {
       )}
       <div>Likes: {tweet.likes_count}</div>
 
-      <Button
-        text="like"
-        tweet={tweet}
-        action_method="like"
-        handleTweetAction={handleTweetAction}
-      />
+      {tweet.like_status ? (
+        <Button
+          text="unlike"
+          tweet={tweet}
+          action_method="unlike"
+          handleTweetAction={handleTweetAction}
+        />
+      ) : (
+        <Button
+          text="like"
+          tweet={tweet}
+          action_method="like"
+          handleTweetAction={handleTweetAction}
+        />
+      )}
 
-      <Button
-        text="unlike"
-        tweet={tweet}
-        action_method="unlike"
-        handleTweetAction={handleTweetAction}
-      />
+
       <Button
         text="retweet"
         tweet={tweet}
