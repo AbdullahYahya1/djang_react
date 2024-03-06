@@ -15,7 +15,6 @@ function App() {
         <Route path="/tweet/:id/" element={<TweetDetail />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
       </Routes>
     </Router>
   );
