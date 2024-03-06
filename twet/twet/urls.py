@@ -10,7 +10,6 @@ from tweets.views import UserRegistrationAPIView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('tweets/', include('tweets.urls')),
     path('api/tweets/', include('tweets.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
