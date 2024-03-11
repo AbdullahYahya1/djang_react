@@ -1,7 +1,10 @@
 import React from "react";
 import Button from "./Button";
 import { buttonsApiActions } from "../lookup/components";
+import { useNavigate } from "react-router-dom";
+
 function Tweet(props) {
+  const navigate = useNavigate();
   const { tweet, addTweet, setTweets, tweets, cname } = props;
   const handleTweetAction = async (event, tweet_id, action) => {
     try {
@@ -33,9 +36,15 @@ function Tweet(props) {
 
         setTweets(updatedTweets);
       } else {
+        if (error.message === 'TokenExpired') {
+          navigate('/login');
+        }
         console.error("Failed to update tweet. Status: ", response.status);
       }
     } catch (error) {
+        if (error.message === 'TokenExpired') {
+          navigate('/login');
+        }
       console.error("Error occurred while updating tweet: ", error);
     }
   };
