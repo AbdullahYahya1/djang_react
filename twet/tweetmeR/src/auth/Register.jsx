@@ -1,4 +1,3 @@
-// src/components/Register.js
 import React, { useState } from 'react';
 import authService from '../lookup/authService';
 import { useNavigate } from 'react-router-dom';

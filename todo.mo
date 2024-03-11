@@ -1,14 +1,8 @@
 Tweets : 
     createing : 
         imge
-        text
-    deletig
-    retweeting 
-    liking 
 
 Users :
-    Register 
-    Login 
     Logout 
     Profile:
         imge 

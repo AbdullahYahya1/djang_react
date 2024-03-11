@@ -70,7 +70,7 @@ function TweetList(props) {
             addTweet={addTweet}
             setTweets={setTweets}
             tweets={tweets}
-            key={tweet.id || index} // Assuming each tweet has a unique 'id'
+            key={tweet.id || index}
             cname="layout"
           />
         ))}

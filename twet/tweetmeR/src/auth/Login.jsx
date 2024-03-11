@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import authService from '../lookup/authService'; // Adjust the path as necessary
+import authService from '../lookup/authService'; 
 
 const Login = () => {
   const navigate = useNavigate();
@@ -13,14 +13,11 @@ const Login = () => {
 
     authService.login(username, password).then(
       () => {
-        // Redirect to the homepage or another target upon successful login
         navigate('/');
       },
       (error) => {
-        // Handle login failure
         let resMessage = "Failed to log in. Check your username and password.";
         if (error.response && error.response.data) {
-          // Optionally parse and display more specific error messages from the backend
           const detailedMessage = Object.keys(error.response.data)
             .map(key => `${key}: ${error.response.data[key].join(" ")}`)
             .join("; ");

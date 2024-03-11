@@ -10,7 +10,7 @@ function TweetForm(props) {
     const tweetContent = textAreaRef.current.value.trim();
     if (tweetContent !== "") {
       try {
-        const res = await PostTweet({ content: tweetContent }); // Assuming PostTweet is an async function for making API calls
+        const res = await PostTweet({ content: tweetContent }); 
         const newTweet = res;
         props.addTweet(newTweet);
         textAreaRef.current.value = "";
