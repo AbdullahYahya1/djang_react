@@ -1,4 +1,3 @@
-// apiFunctions.js
 const getAuthToken = () => {
   const user = JSON.parse(localStorage.getItem('user'));
   return user ? `Bearer ${user.access}` : ''; // Use the `access` token for Authorization
